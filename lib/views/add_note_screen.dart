@@ -12,25 +12,34 @@ class AddNoteScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Controllers for text fields
     final TextEditingController titleController = TextEditingController();
     final TextEditingController contentController = TextEditingController();
+
+    // Access note controller from provider
     final state = ref.read(noteControllerProvider.notifier);
+
+    // Form key for validation
     final key = GlobalKey<FormState>();
+
+    // Focus nodes for managing focus
     final titleFocus = FocusNode();
     final contentFocus = FocusNode();
 
+    // Flag indicating editing mode
     final isEditing = note != null;
 
     if (isEditing) {
+      // Pre-fill fields if editing an existing note
       titleController.text = note!.title;
       contentController.text = note!.content;
     }
 
-    // create submit function
-
+    /// Handle form submission
     void submit() {
       if (key.currentState!.validate()) {
         if (isEditing) {
+          // Edit existing note if changes were made
           if (note?.title != titleController.text ||
               note?.content != contentController.text) {
             state.edit(
@@ -54,6 +63,7 @@ class AddNoteScreen extends ConsumerWidget {
             );
           }
         } else {
+          // Add new note
           state.add(
             titleController.text,
             contentController.text,
@@ -67,7 +77,6 @@ class AddNoteScreen extends ConsumerWidget {
         }
       }
     }
-
 
     return Scaffold(
       appBar: AppBar(
