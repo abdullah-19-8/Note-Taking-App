@@ -8,12 +8,16 @@ class AddNoteScreen extends ConsumerWidget {
   final NoteModel? note;
   const AddNoteScreen({Key? key, this.note}) : super(key: key);
 
+  static const routeName = '/add-note';
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final TextEditingController titleController = TextEditingController();
     final TextEditingController contentController = TextEditingController();
     final state = ref.read(noteControllerProvider.notifier);
     final key = GlobalKey<FormState>();
+    final titleFocus = FocusNode();
+    final contentFocus = FocusNode();
 
     final isEditing = note != null;
 
@@ -21,6 +25,49 @@ class AddNoteScreen extends ConsumerWidget {
       titleController.text = note!.title;
       contentController.text = note!.content;
     }
+
+    // create submit function
+
+    void submit() {
+      if (key.currentState!.validate()) {
+        if (isEditing) {
+          if (note?.title != titleController.text ||
+              note?.content != contentController.text) {
+            state.edit(
+              NoteModel(
+                id: note!.id,
+                title: titleController.text,
+                content: contentController.text,
+              ),
+            );
+            showSnackBar(
+              context,
+              'Note edited successfully',
+              isError: false,
+            );
+            Navigator.of(context).pop();
+          } else {
+            showSnackBar(
+              context,
+              'No changes made',
+              isError: true,
+            );
+          }
+        } else {
+          state.add(
+            titleController.text,
+            contentController.text,
+          );
+          showSnackBar(
+            context,
+            'Note added successfully',
+            isError: false,
+          );
+          Navigator.of(context).pop();
+        }
+      }
+    }
+
 
     return Scaffold(
       appBar: AppBar(
@@ -36,6 +83,11 @@ class AddNoteScreen extends ConsumerWidget {
               children: [
                 TextFormField(
                   controller: titleController,
+                  focusNode: titleFocus,
+                  onFieldSubmitted: (value) {
+                    titleFocus.unfocus();
+                    FocusScope.of(context).requestFocus(contentFocus);
+                  },
                   decoration: const InputDecoration(
                     labelText: 'Title',
                     border: OutlineInputBorder(),
@@ -50,6 +102,7 @@ class AddNoteScreen extends ConsumerWidget {
                 const SizedBox(height: 16.0),
                 TextFormField(
                   controller: contentController,
+                  focusNode: contentFocus,
                   decoration: const InputDecoration(
                     labelText: 'Content',
                     border: OutlineInputBorder(),
@@ -65,45 +118,7 @@ class AddNoteScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16.0),
                 ElevatedButton(
-                  onPressed: () {
-                    if (key.currentState!.validate()) {
-                      if (isEditing) {
-                        if (note?.title != titleController.text ||
-                            note?.content != contentController.text) {
-                          state.edit(
-                            NoteModel(
-                              id: note!.id,
-                              title: titleController.text,
-                              content: contentController.text,
-                            ),
-                          );
-                          showSnackBar(
-                            context,
-                            'Note edited successfully',
-                            isError: false,
-                          );
-                          Navigator.of(context).pop();
-                        } else {
-                          showSnackBar(
-                            context,
-                            'No changes made',
-                            isError: true,
-                          );
-                        }
-                      } else {
-                        state.add(
-                          titleController.text,
-                          contentController.text,
-                        );
-                        showSnackBar(
-                          context,
-                          'Note added successfully',
-                          isError: false,
-                        );
-                        Navigator.of(context).pop();
-                      }
-                    }
-                  },
+                  onPressed: submit,
                   child: Text(isEditing ? 'Edit Note' : 'Add Note'),
                 ),
               ],

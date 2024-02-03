@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:note_taking_app/views/add_note_screen.dart';
+import 'package:note_taking_app/utils/helpers.dart';
+import 'package:note_taking_app/widgets/note_card.dart';
 
 import '../controllers/note_controller.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  static const routeName = '/';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,34 +27,13 @@ class HomeScreen extends ConsumerWidget {
                 key: ValueKey(note.id),
                 onDismissed: (direction) {
                   ref.read(noteControllerProvider.notifier).remove(note);
+                  showSnackBar(
+                    context,
+                    'Note deleted successfully',
+                    isError: false,
+                  );
                 },
-                child: Container(
-                  margin: const EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10.0),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.grey,
-                        offset: Offset(0.0, 1.0),
-                        blurRadius: 6.0,
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                      title: Text(note.title),
-                      subtitle: Text(note.content),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => AddNoteScreen(note: note),
-                            ),
-                          );
-                        },
-                      )),
-                ),
+                child: NoteCard(note: note),
               );
             },
           );
