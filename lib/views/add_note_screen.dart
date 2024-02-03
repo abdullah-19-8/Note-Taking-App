@@ -33,6 +33,7 @@ class AddNoteScreen extends ConsumerWidget {
     final TextEditingController titleController = TextEditingController();
     final TextEditingController contentController = TextEditingController();
     final state = ref.read(noteControllerProvider.notifier);
+    final key = GlobalKey<FormState>();
 
     final isEditing = note != null;
 
@@ -47,56 +48,87 @@ class AddNoteScreen extends ConsumerWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: titleController,
-              decoration: const InputDecoration(
-                labelText: 'Title',
-                border: OutlineInputBorder(),
-              ),
+        child: Form(
+          key: key,
+          autovalidateMode: AutovalidateMode.disabled,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: titleController,
+                  decoration: const InputDecoration(
+                    labelText: 'Title',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter a title';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                TextFormField(
+                  controller: contentController,
+                  decoration: const InputDecoration(
+                    labelText: 'Content',
+                    border: OutlineInputBorder(),
+                    alignLabelWithHint: true,
+                  ),
+                  maxLines: 5,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter a content';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () {
+                    if (key.currentState!.validate()) {
+                      if (isEditing) {
+                        if (note?.title != titleController.text ||
+                            note?.content != contentController.text) {
+                          state.edit(
+                            NoteModel(
+                              id: note!.id,
+                              title: titleController.text,
+                              content: contentController.text,
+                            ),
+                          );
+                          showSnackBar(
+                            context,
+                            'Note edited successfully',
+                            isError: false,
+                          );
+                          Navigator.of(context).pop();
+                        } else {
+                          showSnackBar(
+                            context,
+                            'No changes made',
+                            isError: true,
+                          );
+                        }
+                      } else {
+                        state.add(
+                          titleController.text,
+                          contentController.text,
+                        );
+                        showSnackBar(
+                          context,
+                          'Note added successfully',
+                          isError: false,
+                        );
+                        Navigator.of(context).pop();
+                      }
+                    }
+                  },
+                  child: Text(isEditing ? 'Edit Note' : 'Add Note'),
+                ),
+              ],
             ),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: contentController,
-              maxLines: 8,
-              decoration: const InputDecoration(
-                alignLabelWithHint: true,
-                labelText: 'Content',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                final title = titleController.text;
-                final content = contentController.text;
-                if (title.isNotEmpty && content.isNotEmpty && !isEditing) {
-                  state.add(
-                    title,
-                    content,
-                  );
-                  Navigator.of(context).pop();
-                } else if (title.isNotEmpty &&
-                    content.isNotEmpty &&
-                    isEditing) {
-                  if (title != note!.title || content != note!.content) {
-                    state.edit(
-                      NoteModel(
-                        id: note!.id,
-                        title: title,
-                        content: content,
-                      ),
-                    );
-                    Navigator.of(context).pop();
-                  } else {
-                    showSnackBar(context, 'No changes made');
-                  }
-                }
-              },
-              child: Text(isEditing ? 'Update Note' : 'Add Note'),
-            ),
-          ],
+          ),
         ),
       ),
     );
