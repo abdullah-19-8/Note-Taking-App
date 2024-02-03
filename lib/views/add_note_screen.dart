@@ -1,23 +1,3 @@
-// create a stateful widget that will be our add note screen and will be the screen that the user sees when they want to add a new note.
-/// it will have a form with two text fields and a button to submit the form.
-/// use this controller to add a new note to the list of notes.
-/// final noteControllerProvider =
-//     StateNotifierProvider<NoteController, List<NoteModel>>((ref) {
-//   return NoteController();
-// });
-
-// class NoteController extends StateNotifier<List<NoteModel>> {
-//   NoteController() : super([]);
-
-//   void add(NoteModel note) {
-//     state = [...state, note];
-//   }
-
-//   void remove(NoteModel note) {
-//     state = state.where((element) => element != note).toList();
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_taking_app/controllers/note_controller.dart';

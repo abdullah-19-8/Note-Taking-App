@@ -1,6 +1,3 @@
-// create a stateful widget that will be our home screen and will be the first screen that the user sees when they open the app.
-// it will show a list of notes and a button to add a new note.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_taking_app/views/add_note_screen.dart';
@@ -37,24 +34,23 @@ class HomeScreen extends ConsumerWidget {
                       BoxShadow(
                         color: Colors.grey,
                         offset: Offset(0.0, 1.0),
-                        blurRadius: 2.0,
+                        blurRadius: 6.0,
                       ),
                     ],
                   ),
                   child: ListTile(
-                    title: Text(note.title),
-                    subtitle: Text(note.content),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => AddNoteScreen(note: note),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                      title: Text(note.title),
+                      subtitle: Text(note.content),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => AddNoteScreen(note: note),
+                            ),
+                          );
+                        },
+                      )),
                 ),
               );
             },
