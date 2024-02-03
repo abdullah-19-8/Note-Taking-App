@@ -14,7 +14,7 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home Page'),
+        title: const Text('Note Page'),
       ),
       body: Consumer(
         builder: (context, watch, child) {
@@ -28,25 +28,32 @@ class HomeScreen extends ConsumerWidget {
                 onDismissed: (direction) {
                   ref.read(noteControllerProvider.notifier).remove(note);
                 },
-                background: Container(
-                  color: Colors.red,
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: const Icon(Icons.delete),
-                ),
-                child: ListTile(
-                  title: Text(note.title),
-                  subtitle: Text(note.content),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return AddNoteScreen(
-                          note: note,
+                child: Container(
+                  margin: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.grey,
+                        offset: Offset(0.0, 1.0),
+                        blurRadius: 2.0,
+                      ),
+                    ],
+                  ),
+                  child: ListTile(
+                    title: Text(note.title),
+                    subtitle: Text(note.content),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => AddNoteScreen(note: note),
+                          ),
                         );
-                      }));
-                    },
+                      },
+                    ),
                   ),
                 ),
               );
