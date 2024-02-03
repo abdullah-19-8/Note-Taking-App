@@ -22,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:note_taking_app/controllers/note_controller.dart';
 import 'package:note_taking_app/models/note_model.dart';
+import 'package:note_taking_app/utils/helpers.dart';
 
 class AddNoteScreen extends ConsumerWidget {
   final NoteModel? note;
@@ -31,19 +32,13 @@ class AddNoteScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final TextEditingController titleController = TextEditingController();
     final TextEditingController contentController = TextEditingController();
+    final state = ref.read(noteControllerProvider.notifier);
 
     final isEditing = note != null;
 
     if (isEditing) {
       titleController.text = note!.title;
       contentController.text = note!.content;
-    }
-
-    void showSnackBar(String message) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ));
     }
 
     return Scaffold(
@@ -77,25 +72,25 @@ class AddNoteScreen extends ConsumerWidget {
                 final title = titleController.text;
                 final content = contentController.text;
                 if (title.isNotEmpty && content.isNotEmpty && !isEditing) {
-                  ref.read(noteControllerProvider.notifier).add(
-                        title,
-                        content,
-                      );
+                  state.add(
+                    title,
+                    content,
+                  );
                   Navigator.of(context).pop();
                 } else if (title.isNotEmpty &&
                     content.isNotEmpty &&
                     isEditing) {
                   if (title != note!.title || content != note!.content) {
-                    ref.read(noteControllerProvider.notifier).edit(
-                          NoteModel(
-                            id: note!.id,
-                            title: title,
-                            content: content,
-                          ),
-                        );
+                    state.edit(
+                      NoteModel(
+                        id: note!.id,
+                        title: title,
+                        content: content,
+                      ),
+                    );
                     Navigator.of(context).pop();
                   } else {
-                    showSnackBar('No changes made');
+                    showSnackBar(context, 'No changes made');
                   }
                 }
               },

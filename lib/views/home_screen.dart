@@ -23,19 +23,31 @@ class HomeScreen extends ConsumerWidget {
             itemCount: notes.length,
             itemBuilder: (context, index) {
               final note = notes[index];
-              return ListTile(
-                title: Text(note.title),
-                subtitle: Text(note.content),
-                trailing: IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return AddNoteScreen(
-                        note: note,
-                      );
-                    }));
-                  },
+              return Dismissible(
+                key: ValueKey(note.id),
+                onDismissed: (direction) {
+                  ref.read(noteControllerProvider.notifier).remove(note);
+                },
+                background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: const Icon(Icons.delete),
+                ),
+                child: ListTile(
+                  title: Text(note.title),
+                  subtitle: Text(note.content),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return AddNoteScreen(
+                          note: note,
+                        );
+                      }));
+                    },
+                  ),
                 ),
               );
             },
