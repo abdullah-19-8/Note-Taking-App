@@ -2,8 +2,8 @@
 // it will show a list of notes and a button to add a new note.
 
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:note_taking_app/views/add_note_screen.dart';
 
 import '../controllers/note_controller.dart';
 
@@ -27,9 +27,14 @@ class HomeScreen extends ConsumerWidget {
                 title: Text(note.title),
                 subtitle: Text(note.content),
                 trailing: IconButton(
-                  icon: const Icon(Icons.delete),
+                  icon: const Icon(Icons.edit),
                   onPressed: () {
-                    ref.read(noteControllerProvider.notifier).remove(note);
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return AddNoteScreen(
+                        note: note,
+                      );
+                    }));
                   },
                 ),
               );
